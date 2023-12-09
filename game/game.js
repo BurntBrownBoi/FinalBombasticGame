@@ -117,14 +117,14 @@ class mainScene {
     });
   }
 
-  moveAlien() {
-    if (false) {
+  moveAlien(time) {
+    if (time > this.nextAlienMove) {
       this.alien.setVelocity(
         Phaser.Math.Between(-this.alienSpeed, this.alienSpeed),
         Phaser.Math.Between(-this.alienSpeed, this.alienSpeed)
       );
 
-      this.nextAlienMove = +2000;
+      this.nextAlienMove = time + 2000;
     }
   }
 
