@@ -5,7 +5,7 @@
       "name": "Spring Boot-BarrysSurvivalApplication<barrys-survival>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "mainClass": "com.Application.BarrysSurvivalApplication",
+      "mainClass": "com.barryssurvival.Application.BarrysSurvivalApplication",
       "projectName": "barrys-survival",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
@@ -15,7 +15,7 @@
       "name": "Spring Boot-BarrysSurvivalApplication<barrys-survival>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "mainClass": "com.barryssurvival.Application.BarrysSurvivalApplication",
+      "mainClass": "com.barryssurvival.BarrysSurvivalApplication",
       "projectName": "barrys-survival",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
