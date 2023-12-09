@@ -8,6 +8,8 @@ class mainScene {
   create() {
     this.player = this.physics.add.sprite(100, 100, "player");
     this.alien = this.physics.add.sprite(300, 300, "alien");
+    this.alien.setCollideWorldBounds(true);
+    this.alien.setBounce(1);
 
     this.createButton(50, 550, "Leaderboard", this.showLeaderboard);
 
@@ -19,7 +21,9 @@ class mainScene {
 
     this.arrow = this.input.keyboard.createCursorKeys();
 
-    this.createEnemies();
+    this.alien.setVelocity(100, 100);
+    this.alienSpeed = 100;
+    this.nextAlienMove = 0;
   }
 
   update() {
@@ -53,6 +57,7 @@ class mainScene {
     }
 
     this.shoot();
+    this.moveAlien();
   }
 
   shoot() {
@@ -90,14 +95,7 @@ class mainScene {
         this.lastShotTime = this.time.now;
 
         // Add a delay for the cooldown (1 second)
-        this.time.delayedCall(
-          1000,
-          () => {
-            // Empty callback, can be used for any additional cooldown logic
-          },
-          [],
-          this
-        );
+        this.time.delayedCall(1000, () => {}, [], this);
       }
     }
   }
@@ -119,33 +117,15 @@ class mainScene {
     });
   }
 
-  hit() {
-    this.alien.x = Phaser.Math.Between(100, 600);
-    this.alien.y = Phaser.Math.Between(100, 300);
+  moveAlien() {
+    if (false) {
+      this.alien.setVelocity(
+        Phaser.Math.Between(-this.alienSpeed, this.alienSpeed),
+        Phaser.Math.Between(-this.alienSpeed, this.alienSpeed)
+      );
 
-    this.score += 10;
-
-    this.scoreText.setText("score: " + this.score);
-
-    this.tweens.add({
-      targets: this.player,
-      duration: 200,
-      scaleX: 1.2,
-      scaleY: 1.2,
-      yoyo: true,
-    });
-  }
-
-  createEnemies() {
-    // this.enemies = this.physics.add.group({
-    //   key: "alien",
-    //   repeat: 0, // Adjust as needed
-    //   setXY: { stepX: 100 },
-    // });
-    // this.enemies.children.iterate((enemy) => {
-    //   enemy.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    //   enemy.setCollideWorldBounds(true);
-    // });
+      this.nextAlienMove = +2000;
+    }
   }
 
   endGame() {
@@ -179,6 +159,7 @@ class mainScene {
 }
 
 new Phaser.Game({
+  type: Phaser.AUTO,
   width: 800,
   height: 600,
   backgroundColor: "#3498db",
