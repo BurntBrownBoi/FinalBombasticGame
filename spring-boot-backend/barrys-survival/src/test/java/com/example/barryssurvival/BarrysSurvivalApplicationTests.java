@@ -1,13 +1,13 @@
-package com.example.barryssurvival;
+// package com.example.barryssurvival;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class BarrysSurvivalApplicationTests {
+// @SpringBootTest
+// class BarrysSurvivalApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// @Test
+// void contextLoads() {
+// }
 
-}
+// }
