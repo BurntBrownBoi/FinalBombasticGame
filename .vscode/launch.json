@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-BarrysSurvivalApplication<barrys-survival>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.Application.BarrysSurvivalApplication",
+      "projectName": "barrys-survival",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
