@@ -155,8 +155,6 @@ class mainScene {
   showLeaderboard() {
     // Switch to the leaderboard scene
     this.scene.launch("LeaderboardScene");
-    // Optionally, pause the current game scene
-    this.scene.pause();
   }
 
   resumeGame() {
