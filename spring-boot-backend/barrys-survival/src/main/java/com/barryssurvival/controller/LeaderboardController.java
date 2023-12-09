@@ -16,12 +16,14 @@ public class LeaderboardController {
     @Autowired
     private LeaderboardService leaderboardService;
 
+    @CrossOrigin(origins = "*")
     @PostMapping
     public ResponseEntity<Leaderboard> addEntry(@RequestBody Leaderboard entry) {
         System.out.println(entry);
         return ResponseEntity.ok(leaderboardService.saveLeaderboardEntry(entry));
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping
     public ResponseEntity<List<Leaderboard>> getLeaderboard() {
         return ResponseEntity.ok(leaderboardService.getLeaderboard());
