@@ -27,7 +27,7 @@ class mainScene {
 
   update() {
     if (this.physics.overlap(this.player, this.alien)) {
-      //insert death method
+      this.endGame();
     }
 
     // Use WASD for movement
@@ -132,7 +132,7 @@ class mainScene {
     this.nextAlienMove = 0;
   }
 
-  moveAlien(time) {
+  moveAlien() {
     if (this.player && this.alien) {
       const speed = 100; // Adjust speed as necessary
       const angle = Phaser.Math.Angle.Between(
@@ -161,6 +161,12 @@ class mainScene {
     this.scene.resume();
   }
 
+  // In your main game scene, when the game ends
+  endGame() {
+    this.scene.stop("mainScene");
+    this.scene.start("GameOverScene", { score: this.score });
+  }
+
   createButton(x, y, text, callback) {
     const button = this.add
       .text(x, y, text, {
@@ -176,6 +182,128 @@ class mainScene {
   }
 }
 
+class GameOverScene extends Phaser.Scene {
+  constructor() {
+    super({ key: "GameOverScene" });
+  }
+
+  init(data) {
+    this.finalScore = data.score;
+  }
+
+  create() {
+    // Game over text
+    this.add
+      .text(400, 100, "Game Over", { fontSize: "32px", color: "#fff" })
+      .setOrigin(0.5);
+
+    this.add
+      .text(200, 80, "Score: " + this.finalScore, {
+        fontSize: "24px",
+        color: "#fff",
+      })
+      .setOrigin(0.5);
+
+    // Create a native HTML input element for the alias
+    const input = document.createElement("input");
+    input.type = "text";
+    input.style.position = "absolute";
+    input.style.top = "350px";
+    input.style.left = "400px";
+    input.style.transform = "translateX(-50%)";
+    document.body.appendChild(input);
+
+    // Save button
+    const saveButton = this.add
+      .text(400, 400, "Save Score", { fontSize: "24px", color: "#fff" })
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => this.saveScore(input.value));
+  }
+
+  saveScore(alias) {
+    const score = this.finalScore; // Use the score passed to this scene
+    const data = { alias, score };
+    console.log("Sending data:", data);
+
+    fetch("http://localhost:8080/api/leaderboard", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data), // Stringify the data
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Score saved:", data);
+        // Handle any response here
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+}
+
+class LeaderboardScene extends Phaser.Scene {
+  constructor() {
+    super({ key: "LeaderboardScene" });
+  }
+
+  preload() {}
+
+  create() {
+    let graphics = this.add.graphics();
+    graphics.fillStyle(0x000000, 0.8);
+    graphics.fillRect(0, 0, this.cameras.main.width, this.cameras.main.height);
+
+    this.add.text(100, 100, "Leaderboard", { fontSize: "32px", color: "#fff" });
+
+    this.createCloseButton(500, 550, "Close", this.closeLeaderboard);
+
+    this.fetchLeaderboardData();
+  }
+
+  fetchLeaderboardData() {
+    fetch("http://localhost:8080/api/leaderboard")
+      .then((response) => response.json())
+      .then((data) => this.displayLeaderboard(data))
+      .catch((error) =>
+        console.error("Error fetching leaderboard data:", error)
+      );
+  }
+
+  displayLeaderboard(data) {
+    data.forEach((entry, index) => {
+      this.add.text(100, 150 + index * 30, `${entry.alias}: ${entry.score}`, {
+        fontSize: "24px",
+        color: "#fff",
+      });
+    });
+  }
+
+  toggleVisibility(visible) {
+    this.visible = visible;
+  }
+
+  createCloseButton(x, y, text, callback) {
+    let button = this.add
+      .text(x, y, text, {
+        fontSize: "20px",
+        padding: { x: 10, y: 5 },
+        backgroundColor: "#000000",
+        color: "#ffffff",
+      })
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", () => callback.call(this));
+
+    return button;
+  }
+
+  closeLeaderboard() {
+    this.scene.stop();
+    this.scene.resume("mainScene");
+  }
+}
+
 new Phaser.Game({
   type: Phaser.AUTO,
   width: 800,
@@ -188,5 +316,5 @@ new Phaser.Game({
       debug: false,
     },
   },
-  scene: [mainScene, LeaderboardScene],
+  scene: [mainScene, LeaderboardScene, GameOverScene],
 });
