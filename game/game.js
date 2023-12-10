@@ -8,7 +8,7 @@ class mainScene {
   create() {
     let style = { font: "20px Arial", fill: "#fff" };
 
-    this.alien = this.physics.add.sprite(300, 300, "alien");
+    this.alien = this.physics.add.sprite(400, 300, "alien");
     this.alien.setCollideWorldBounds(true);
     this.alien.setBounce(1);
     this.alien.setVelocity(100, 100);
@@ -133,13 +133,16 @@ class mainScene {
   }
 
   moveAlien(time) {
-    if (time > this.nextAlienMove) {
-      this.alien.setVelocity(
-        Phaser.Math.Between(-this.alienSpeed, this.alienSpeed),
-        Phaser.Math.Between(-this.alienSpeed, this.alienSpeed)
+    if (this.player && this.alien) {
+      const speed = 100; // Adjust speed as necessary
+      const angle = Phaser.Math.Angle.Between(
+        this.alien.x,
+        this.alien.y,
+        this.player.x,
+        this.player.y
       );
-
-      this.nextAlienMove = time + 2000;
+      this.alien.setVelocityX(Math.cos(angle) * speed);
+      this.alien.setVelocityY(Math.sin(angle) * speed);
     }
   }
 
