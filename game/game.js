@@ -6,29 +6,28 @@ class mainScene {
   }
 
   create() {
-    this.player = this.physics.add.sprite(100, 100, "player");
+    let style = { font: "20px Arial", fill: "#fff" };
+
     this.alien = this.physics.add.sprite(300, 300, "alien");
     this.alien.setCollideWorldBounds(true);
     this.alien.setBounce(1);
+    this.alien.setVelocity(100, 100);
+    this.alienSpeed = 100;
+    this.nextAlienMove = 0;
+    this.player = this.physics.add.sprite(100, 100, "player");
 
     this.createButton(50, 550, "Leaderboard", this.showLeaderboard);
 
     this.score = 0;
-
-    let style = { font: "20px Arial", fill: "#fff" };
-
     this.scoreText = this.add.text(20, 20, "score: " + this.score, style);
 
     this.arrow = this.input.keyboard.createCursorKeys();
-
-    this.alien.setVelocity(100, 100);
-    this.alienSpeed = 100;
-    this.nextAlienMove = 0;
+    this.bullets = this.physics.add.group();
   }
 
   update() {
     if (this.physics.overlap(this.player, this.alien)) {
-      this.hit();
+      //insert death method
     }
 
     // Use WASD for movement
@@ -58,6 +57,7 @@ class mainScene {
 
     this.shoot();
     this.moveAlien();
+    this.physics.overlap(this.bullets, this.alien, this.hitAlien, null, this);
   }
 
   shoot() {
@@ -69,27 +69,32 @@ class mainScene {
           this.player.y,
           "bullet"
         );
-        this.physics.add.existing(bullet); // Enable physics for the bullet
+        this.bullets.add(bullet);
 
         this.physics.moveTo(bullet, this.input.x, this.input.y, 300);
 
         // Set boundaries for bullets
-        this.physics.world.setBounds(0, 0, 800, 600);
-
         bullet.setCollideWorldBounds(true);
 
-        this.physics.add.overlap(
-          bullet,
-          this.enemies,
-          this.hitEnemy,
-          null,
+        // Optionally, set the bullet to be destroyed automatically when it leaves the world bounds
+        bullet.body.onWorldBounds = true;
+        bullet.body.world.on("worldbounds", (body) => {
+          if (body.gameObject === bullet) {
+            bullet.destroy();
+          }
+        });
+
+        // Destroy the bullet after 5 seconds if not already destroyed
+        this.time.delayedCall(
+          5000,
+          () => {
+            if (bullet && bullet.active) {
+              bullet.destroy();
+            }
+          },
+          [],
           this
         );
-
-        // Destroy the bullet after 5 seconds
-        setTimeout(() => {
-          bullet.destroy();
-        }, 5000);
 
         // Set the last shot time
         this.lastShotTime = this.time.now;
@@ -100,7 +105,10 @@ class mainScene {
     }
   }
 
-  hit() {
+  hitAlien(bullet, alien) {
+    bullet.destroy();
+    alien.destroy();
+
     this.alien.x = Phaser.Math.Between(100, 600);
     this.alien.y = Phaser.Math.Between(100, 300);
 
@@ -115,6 +123,13 @@ class mainScene {
       scaleY: 1.2,
       yoyo: true,
     });
+
+    this.alien = this.physics.add.sprite(300, 300, "alien");
+    this.alien.setCollideWorldBounds(true);
+    this.alien.setBounce(1);
+    this.alien.setVelocity(100, 100);
+    this.alienSpeed = 100;
+    this.nextAlienMove = 0;
   }
 
   moveAlien(time) {
@@ -163,7 +178,12 @@ new Phaser.Game({
   width: 800,
   height: 600,
   backgroundColor: "#3498db",
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: { y: 0 },
+      debug: false,
+    },
+  },
   scene: [mainScene, LeaderboardScene],
-  physics: { default: "arcade" },
-  parent: "game",
 });
